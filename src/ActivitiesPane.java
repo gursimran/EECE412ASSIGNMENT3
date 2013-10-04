@@ -103,12 +103,12 @@ public class ActivitiesPane extends JPanel {
 									clientSocket = new Socket(ipAddressValue, Integer.parseInt(portNumberValue));
 									clientThread = new Client(clientSocket);
 									clientThread.start();
+									connect.setText("Disconnect");
+									VPNGUI.startVPN("Client");
 								} catch (Exception e1) {
 									// TODO Auto-generated catch block
 									new ErrorMessage("Server not available, Please make sure the IP address and port are correct");
 								}
-								connect.setText("Disconnect");
-								VPNGUI.startVPN("Client");
 							}
 						}
 					}else{
