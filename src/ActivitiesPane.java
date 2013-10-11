@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,9 +24,12 @@ public class ActivitiesPane extends JPanel {
 	public static Socket serverSock = null;
 	private ServerSocket serverSocket = null;
 	public static Socket clientSocket = null;
-	public Thread clientThread = null;
+	public static Thread clientThread = null;
 	public String sharedKey = null;
 	public ActivitiesPane() {
+		this.setMaximumSize(new Dimension(150, 500));
+		this.setBorder(BorderFactory.createLineBorder(Color.black));
+
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	}
 
@@ -124,14 +129,17 @@ public class ActivitiesPane extends JPanel {
 										new ErrorMessage("Please enter a shared key.");
 										return;
 									}
+									Client.sharedKey = sharedKey.getText();
+									Client.sharedKey = changeKeyTo16Bytes(Client.sharedKey);
+									Client.nonce = generateNonce();
 									clientSocket = new Socket(ipAddressValue, Integer.parseInt(portNumberValue));
 									clientThread = new Client(clientSocket);
 									clientThread.start();
-									String nonce = generateNonce();
+									
 									Client client = new Client(ActivitiesPane.clientSocket);
-									//client.sendSomeMessages(1, new String("newConnectionRequestclientNonce:" + nonce).getBytes());
+									client.sendSomeMessages(1, new String("newConnectionRequestclientNonce:" + Client.nonce).getBytes());
 									connect.setText("Disconnect");
-									VPNGUI.startVPN("Client");
+									//VPNGUI.startVPN("Client");
 								} catch (Exception e1) {
 									// TODO Auto-generated catch block
 									new ErrorMessage("Server not available, Please make sure the IP address and port are correct");
@@ -212,6 +220,8 @@ public class ActivitiesPane extends JPanel {
 									new ErrorMessage("Please enter a shared key.");
 									return;
 								}
+								Server.sharedKey = sharedKey.getText();
+								Server.sharedKey = changeKeyTo16Bytes(Server.sharedKey);
 								serverSocket = new ServerSocket(portNumber);
 								serverThread = new Server(serverSocket);
 								serverThread.start();
@@ -229,6 +239,7 @@ public class ActivitiesPane extends JPanel {
 						startServer.setText("Start Server");
 						VPNGUI.displayPane.removeAll();
 						VPNGUI.displayPane.updateUI();
+						//VPNGUI.waitingForConnection();
 						try {
 							serverSocket.close();
 						} catch (IOException e1) {}
@@ -237,5 +248,18 @@ public class ActivitiesPane extends JPanel {
 			});
 
 		}
+	}
+
+	public static String changeKeyTo16Bytes(String key) {
+		if (key.length() < 16){
+			int times = 16 - key.length();
+			for (int a =0; a < times; a++){
+				key = key + "a";
+			}
+		}else if (key.length() > 16){
+			key = key.substring(0, 16);
+		}
+		
+		return key;
 	}
 }
