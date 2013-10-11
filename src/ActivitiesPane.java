@@ -1,12 +1,13 @@
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -22,11 +23,23 @@ public class ActivitiesPane extends JPanel {
 	private ServerSocket serverSocket = null;
 	public static Socket clientSocket = null;
 	public Thread clientThread = null;
-	
+	public String sharedKey = null;
 	public ActivitiesPane() {
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	}
 
+	public static String generateNonce() { 
+		  try {
+			  byte[] nonce = new byte[16];
+			  Random rand;
+			  rand = SecureRandom.getInstance ("SHA1PRNG");
+			  rand.nextBytes(nonce); 
+			  return rand.toString().substring(27);
+		  } catch (NoSuchAlgorithmException e) {
+		  }
+		  return null;
+		 }
+	
 	public void display(String connectionType) {
 
 		Font font = new Font("Arial", Font.BOLD, 16);
@@ -40,9 +53,15 @@ public class ActivitiesPane extends JPanel {
 			JLabel ipAddressLabel = new JLabel("IP Address");
 			final JTextField ipAddress = new JTextField();
 			ipAddress.setMaximumSize(new Dimension(300, 20));
+			ipAddress.setText("127.0.0.1");
 			JLabel portNumberLabel = new JLabel("Port");
 			final JTextField portNumber = new JTextField();
 			portNumber.setMaximumSize(new Dimension(300, 20));
+			portNumber.setText("1234");
+			JLabel sharedKeyLabel = new JLabel("Shared Key");
+			final JTextField sharedKey = new JTextField();
+			sharedKey.setMaximumSize(new Dimension(300, 20));
+			sharedKey.setText("asd");
 			JLabel emptySpace = new JLabel("                  ");
 			final JButton connect = new JButton("Connect");
 
@@ -100,9 +119,17 @@ public class ActivitiesPane extends JPanel {
 							}
 							if (validPort){
 								try {
+									ActivitiesPane.this.sharedKey = sharedKey.getText();
+									if (ActivitiesPane.this.sharedKey.isEmpty()){
+										new ErrorMessage("Please enter a shared key.");
+										return;
+									}
 									clientSocket = new Socket(ipAddressValue, Integer.parseInt(portNumberValue));
 									clientThread = new Client(clientSocket);
 									clientThread.start();
+									String nonce = generateNonce();
+									Client client = new Client(ActivitiesPane.clientSocket);
+									//client.sendSomeMessages(1, new String("newConnectionRequestclientNonce:" + nonce).getBytes());
 									connect.setText("Disconnect");
 									VPNGUI.startVPN("Client");
 								} catch (Exception e1) {
@@ -113,7 +140,13 @@ public class ActivitiesPane extends JPanel {
 						}
 					}else{
 						connect.setText("Connect");
+						VPNGUI.displayPane.removeAll();
+						VPNGUI.displayPane.updateUI();
+						VPNGUI.p = null;
+						VPNGUI.g = null;
 						try {
+							//((Server) ActivitiesPane.serverThread).shutdown();
+							//clientThread.shutdown();
 							clientThread.stop();
 							clientSocket.close();
 						} catch (IOException e1) {}
@@ -126,6 +159,8 @@ public class ActivitiesPane extends JPanel {
 			this.add(ipAddress);
 			this.add(portNumberLabel);
 			this.add(portNumber);
+			this.add(sharedKeyLabel);
+			this.add(sharedKey);
 			this.add(emptySpace);
 			this.add(connect);
 
@@ -136,11 +171,18 @@ public class ActivitiesPane extends JPanel {
 			JLabel portNumberLabel = new JLabel("Port");
 			final JTextField portNumber = new JTextField();
 			portNumber.setMaximumSize(new Dimension(300, 20));
+			portNumber.setText("1234");
+			JLabel sharedKeyLabel = new JLabel("Shared Key");
+			final JTextField sharedKey = new JTextField();
+			sharedKey.setMaximumSize(new Dimension(300, 20));
+			sharedKey.setText("asd");
 			JLabel emptySpace = new JLabel("                  ");
 			final JButton startServer = new JButton("Start Server");
 
 			this.add(portNumberLabel);
 			this.add(portNumber);
+			this.add(sharedKeyLabel);
+			this.add(sharedKey);
 			this.add(emptySpace);
 			this.add(startServer);
 
@@ -165,6 +207,11 @@ public class ActivitiesPane extends JPanel {
 						if (validPort){
 
 							try {
+								ActivitiesPane.this.sharedKey = sharedKey.getText();
+								if (ActivitiesPane.this.sharedKey.isEmpty()){
+									new ErrorMessage("Please enter a shared key.");
+									return;
+								}
 								serverSocket = new ServerSocket(portNumber);
 								serverThread = new Server(serverSocket);
 								serverThread.start();
@@ -177,8 +224,11 @@ public class ActivitiesPane extends JPanel {
 						}
 					}
 					else{
+						//((Server) serverThread).shutdown();
 						((Server) serverThread).stop();
 						startServer.setText("Start Server");
+						VPNGUI.displayPane.removeAll();
+						VPNGUI.displayPane.updateUI();
 						try {
 							serverSocket.close();
 						} catch (IOException e1) {}

@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,6 +34,15 @@ public class VPNGUI {
 	public int width = 1050;
 	public static String serverRecievedMessage = "";
 	public static String clientRecievedMessage = "";
+	SecureRandom random = null;
+	public static BigInteger p = null;
+	public static BigInteger g = null;
+	public static BigInteger a = null;
+	public static BigInteger b = null;
+	public static BigInteger serverDHKey = null;
+	public static BigInteger clientDHKey = null;
+	public static BigInteger DHKey = null;
+			
 	// Constructor for GUI
 	public VPNGUI() {
 		showGUI();
@@ -43,13 +54,15 @@ public class VPNGUI {
 		frame = new JFrame("VPN EECE 412 ASSIGNMENT 3");
 		frame.setBackground(Color.white);
 
-		frame.setPreferredSize(new Dimension(width, height));
+		frame.setPreferredSize(new Dimension(700, 500));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		frame.setMaximumSize(new Dimension(700,500));
+		
 		// Panel for viewing the tables
 		displayPane = new JPanel();
 		displayPane.setBorder(BorderFactory.createLineBorder(Color.black));
 		displayPane.setLayout(new BoxLayout(displayPane, BoxLayout.PAGE_AXIS));
+		displayPane.setMaximumSize(new Dimension(500, 550));
 
 		// Panel for displaying types of users
 		connectionPane = new JPanel();
@@ -63,6 +76,7 @@ public class VPNGUI {
 		connectionPane.add(connectionTypes);
 
 		activitiesPane = new ActivitiesPane();
+		activitiesPane.setMaximumSize(new Dimension(150, 500));
 		activitiesPane.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		initializeMenu();
@@ -142,6 +156,17 @@ public class VPNGUI {
 		}
 
 		if (modeToStartIN == "Server") {
+			if (g == null){
+				SecureRandom rnd = new SecureRandom();
+				g = BigInteger.probablePrime(32, rnd);
+				p = BigInteger.probablePrime(64, rnd);
+				b = BigInteger.probablePrime(16, rnd);
+				//BigInteger a = new BigInteger("0");
+				serverDHKey = g.pow(b.intValue()).mod(p);
+				
+				serverRecievedMessage = p.toString();
+				System.out.println(g + "\n" + serverDHKey);
+			}
 			serverMode();
 			
 		}
@@ -150,6 +175,7 @@ public class VPNGUI {
 	}
 
 	public static void clientMode(){
+		frame.setTitle("CLIENT - VPN EECE 412 ASSIGNMENT 3");
 		JLabel tableTitle = new JLabel("Client");
 		JLabel messageSendLabel = new JLabel("Type the message to send: ");
 		final JTextField messageToSend = new JTextField();
@@ -173,6 +199,7 @@ public class VPNGUI {
 		displayPane.add(messageReceivedFromServer);
 	}
 	public static void serverMode(){
+		frame.setTitle("SERVER - VPN EECE 412 ASSIGNMENT 3");
 		JLabel label = new JLabel("Server");
 		JLabel serverMessageLabel = new JLabel("Message from client:");
 		JLabel tableTitle = new JLabel(serverRecievedMessage);

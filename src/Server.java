@@ -8,6 +8,8 @@ public class Server extends Thread{
 	private ServerSocket serverSocket;
 	private Boolean running = true;
 	OutputStream sockOutput = null;
+	private String nonceFromClient = null;
+	//private Boolean nonceReceivedFromClient = false;
 	public Server( ServerSocket server) {
 		
 		serverSocket = server;
@@ -27,12 +29,25 @@ public class Server extends Thread{
                 // If the socket is closed, sockInput.read() will return -1.
                 if(bytes_read < 0) {
                     System.err.println("Tried to read from socket, read() returned < 0,  Closing socket.");
+                    //bytes_read = sockInput.read(buf, 0, buf.length);
+                    VPNGUI.serverMode();
                     return;
                 }
                 //System.err.println("Received "+bytes_read
                   //                 +" bytes, sending them back to client, data="
                     //               +(new String(buf, 0, bytes_read)));
                 VPNGUI.serverRecievedMessage = new String (buf, 0, bytes_read);
+                //System.out.println(nonceFromClient);
+                if (VPNGUI.serverRecievedMessage.contains("newConnectionRequestclientNonce:")){
+                	nonceFromClient = VPNGUI.serverRecievedMessage.substring(VPNGUI.serverRecievedMessage.indexOf(":")+1);
+                	//nonceReceivedFromClient = true;
+                	VPNGUI.serverRecievedMessage = "";
+                	String encryptedText = "Server,"+nonceFromClient+","+VPNGUI.serverDHKey;
+                	
+                	//String 
+                	//System.out.println("printed from here");
+                	//VPNGUI.serverMode();
+                }
                 VPNGUI.serverMode();
                 //sockOutput.write(buf, 0, bytes_read);
                 // This call to flush() is optional - we're saying go
@@ -79,6 +94,8 @@ public class Server extends Thread{
 
                 sockInput = ActivitiesPane.serverSock.getInputStream();
                 sockOutput = ActivitiesPane.serverSock.getOutputStream();
+                
+                sendMessage(VPNGUI.g.toString() + ";" + VPNGUI.p.toString());
             }
             catch (IOException e){
                 e.printStackTrace(System.err);
@@ -107,6 +124,8 @@ public class Server extends Thread{
 	}
 	
 	public void shutdown(){
-		running = false;
+		//running = false;
+		nonceFromClient = "";
+		//nonceReceivedFromClient = false;
 	}
 }
