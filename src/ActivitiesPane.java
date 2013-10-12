@@ -134,11 +134,12 @@ public class ActivitiesPane extends JPanel {
 									Client.nonce = generateNonce();
 									clientSocket = new Socket(ipAddressValue, Integer.parseInt(portNumberValue));
 									clientThread = new Client(clientSocket);
-									clientThread.start();
 									
+									clientThread.start();
 									Client client = new Client(ActivitiesPane.clientSocket);
 									client.sendSomeMessages(1, new String("newConnectionRequestclientNonce:" + Client.nonce).getBytes());
 									connect.setText("Disconnect");
+									
 									//VPNGUI.startVPN("Client");
 								} catch (Exception e1) {
 									// TODO Auto-generated catch block
@@ -224,9 +225,10 @@ public class ActivitiesPane extends JPanel {
 								Server.sharedKey = changeKeyTo16Bytes(Server.sharedKey);
 								serverSocket = new ServerSocket(portNumber);
 								serverThread = new Server(serverSocket);
-								serverThread.start();
+								
 								startServer.setText("Stop Server");
 								VPNGUI.startVPN("Server");
+								serverThread.start();
 							} catch (IOException e1) {
 								new ErrorMessage("Could not start, please try with a different port");
 							}
@@ -239,7 +241,7 @@ public class ActivitiesPane extends JPanel {
 						startServer.setText("Start Server");
 						VPNGUI.displayPane.removeAll();
 						VPNGUI.displayPane.updateUI();
-						//VPNGUI.waitingForConnection();
+						
 						try {
 							serverSocket.close();
 						} catch (IOException e1) {}

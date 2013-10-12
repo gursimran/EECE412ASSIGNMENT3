@@ -5,7 +5,7 @@ public class CryptoData {
 	private byte[] iv;
 	
 	public CryptoData(String text, byte[] iv) {
-		this.string = string;
+		this.string = text;
 		this.iv = iv;
 	}
 	

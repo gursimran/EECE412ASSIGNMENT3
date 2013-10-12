@@ -208,7 +208,7 @@ public class VPNGUI {
 				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(), DHKey.toString());
 				System.out.println(encryptedMessage.length);
 				encryptedMessageBeingSent.setText("Encrypted Message '" + messageToSend.getText() + "': " + encryptedMessage.toString());
-				IVBeingSent.setText("IV for encrypted message"+AES.getIV().toString());
+				IVBeingSent.setText("IV for encrypted message: "+AES.getIV().toString());
 				((Client) ActivitiesPane.clientThread).sendSomeMessages(1, encryptedMessage);
 			}
 		});
@@ -273,7 +273,7 @@ public class VPNGUI {
 				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(), DHKey.toString());
 				System.out.println("entext:" + encryptedMessage);
 				encryptedMessageBeingSent.setText("Encrypted Message '" + messageToSend.getText() + "': " + encryptedMessage.toString());
-				IVBeingSent.setText("IV for encrypted message" + AES.getIV().toString());
+				IVBeingSent.setText("IV for encrypted message: " + AES.getIV().toString());
 				((Server) ActivitiesPane.serverThread).sendMessage(encryptedMessage);
 			}
 		});

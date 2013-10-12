@@ -41,7 +41,9 @@ public class Server extends Thread{
                 if(bytes_read < 0) {
                     System.err.println("Tried to read from socket, read() returned < 0,  Closing socket.");
                     //bytes_read = sockInput.read(buf, 0, buf.length);
-                    VPNGUI.waitingForConnection();
+                    VPNGUI.displayPane.removeAll();
+					VPNGUI.displayPane.updateUI();
+					VPNGUI.waitingForConnection();
                     return;
                 }
                 //System.err.println("Received "+bytes_read
@@ -51,8 +53,10 @@ public class Server extends Thread{
                 //System.out.println(nonceFromClient);
                 if ( VPNGUI.serverRecievedMessage.contains("newConnectionRequestclientNonce:")){
                 	VPNGUI.displayPane.removeAll();
-                	VPNGUI.displayPane.updateUI();
-                	VPNGUI.displayPane.add(new JLabel("Connection to CLient. PLease wait..."));
+					VPNGUI.displayPane.updateUI();
+					VPNGUI.displayPane.removeAll();
+					VPNGUI.displayPane.updateUI();
+					VPNGUI.displayPane.add(new JLabel("Connecting to Client. Please wait..."));
                 	nonceFromClient = VPNGUI.serverRecievedMessage.substring(VPNGUI.serverRecievedMessage.indexOf(":")+1);
                 	//sendMessage("serverNowSettingUpConnection".getBytes());
                 	//nonceReceivedFromClient = true;

@@ -51,6 +51,8 @@ public class AES {
 		
 	}
 	
+	
+	
 	public static byte[] getIV(){
 		return iv;
 	}

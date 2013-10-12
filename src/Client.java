@@ -96,6 +96,9 @@ public class Client extends Thread {
 				bytes_read = sockInput.read(buf, 0, buf.length);
 				
 				if (receivedPG == false && VPNGUI.g == null){
+					VPNGUI.displayPane.removeAll();
+					VPNGUI.displayPane.updateUI();
+					
 					VPNGUI.displayPane.add(new JLabel("Connection to Server. PLease wait..."));
 					String message = new String(buf, 0, bytes_read);
 					VPNGUI.g = new BigInteger(message.substring(0, message.indexOf(";")));
