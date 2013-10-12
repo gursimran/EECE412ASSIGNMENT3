@@ -6,6 +6,10 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class ErrorMessage extends JFrame{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 100;
 	private JButton exitB;

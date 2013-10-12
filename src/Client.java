@@ -1,13 +1,10 @@
 import java.math.BigInteger;
 import java.net.Socket;
-import java.net.ServerSocket;
 import java.security.SecureRandom;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class Client extends Thread {
 	// private String serverHostname = null;
@@ -38,7 +35,6 @@ public class Client extends Thread {
 
 		// System.err.println("About to start reading/writing to/from socket.");
 
-		byte[] buf = new byte[data.length];
 		int bytes_read = 0;
 		for (int loopi = 1; loopi <= iterations; loopi++) {
 			try {

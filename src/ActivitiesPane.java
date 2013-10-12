@@ -20,6 +20,10 @@ import javax.swing.JTextField;
 
 
 public class ActivitiesPane extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static Thread serverThread = null;
 	public static Socket serverSock = null;
 	private ServerSocket serverSocket = null;
@@ -72,6 +76,7 @@ public class ActivitiesPane extends JPanel {
 
 
 			connect.addActionListener(new ActionListener() {
+				@SuppressWarnings("deprecation")
 				public void actionPerformed(ActionEvent e) {
 					String ipAddressValue = ipAddress.getText();
 					String portNumberValue = portNumber.getText();

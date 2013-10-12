@@ -6,17 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
 
 public class VPNGUI {
@@ -152,7 +141,6 @@ public class VPNGUI {
 	// For displaying the appropriate tables after each transaction
 	public static void startVPN(String modeToStartIN) {
 		
-		JLabel tableTitle = new JLabel();
 		//JTable table = null;
 		//System.out.println("in here");
 		
@@ -261,7 +249,6 @@ public class VPNGUI {
 		JLabel DHclient = new JLabel("g^a mod p: " + clientDHKey.toString());
 		JLabel DHKeyLabel = new JLabel("DHKey (Session Key): " + DHKey.toString());
 		JLabel serverMessageLabel = new JLabel("Message from client:");
-		JLabel messageReceived = new JLabel(serverRecievedMessage);
 		JLabel serverSendMessageLabel = new JLabel("Send to client:");
 		final JLabel encryptedMessageBeingSent = new JLabel();
 		final JLabel IVBeingSent = new JLabel();
