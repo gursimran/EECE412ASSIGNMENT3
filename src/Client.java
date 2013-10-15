@@ -1,9 +1,16 @@
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JLabel;
 
 public class Client extends Thread {
@@ -111,7 +118,17 @@ public class Client extends Thread {
 					bytes_read = sockInput.read(buf3, 0, buf3.length);
 					AES.setIV(buf3);
 					System.out.println(buf3);
-					DHKeyExchange = AES.decrypt(encryptedDHKeyExchange, sharedKey);
+					try {
+						DHKeyExchange = AES.decrypt(encryptedDHKeyExchange, sharedKey);
+					} catch (InvalidKeyException
+							| InvalidAlgorithmParameterException
+							| NoSuchAlgorithmException | NoSuchPaddingException
+							| IllegalBlockSizeException | BadPaddingException e) {
+						// TODO Auto-generated catch block
+						
+						new ErrorMessage("Please make sure server and client shared keys are the same.");
+						return;
+					}
 					System.out.println(DHKeyExchange);
 					if(DHKeyExchange.contains(nonce) && DHKeyExchange.contains("Server")){
 						VPNGUI.serverDHKey = new BigInteger(DHKeyExchange.split(",")[2]);
@@ -127,7 +144,18 @@ public class Client extends Thread {
 						System.out.println(encrypted);
 	                	System.out.println(encrypted.length);
 	                	System.out.println(AES.getIV());
-	                	System.out.println(AES.decrypt(encrypted, sharedKey));
+	                	try {
+							System.out.println(AES.decrypt(encrypted, sharedKey));
+						} catch (InvalidKeyException
+								| InvalidAlgorithmParameterException
+								| NoSuchAlgorithmException
+								| NoSuchPaddingException
+								| IllegalBlockSizeException
+								| BadPaddingException e) {
+							// TODO Auto-generated catch block
+							new ErrorMessage("Error decrypting data");
+							return;
+						}
 	                	System.out.println(serverNonce);
 	                	sendSomeMessages(1, encrypted);
 	                	bytes_read = sockInput.read(buf, 0, buf.length);
@@ -137,7 +165,8 @@ public class Client extends Thread {
 						//BigInteger a = new BigInteger("0");
 						//serverDHKey = g.pow(b.intValue()).mod(p);
 	                	bytes_read = sockInput.read(buf, 0, buf.length);
-						VPNGUI.clientMode();
+						VPNGUI.showCLient = true;
+	                	///VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();
 						//return;
 					}else{
 						new ErrorMessage("Server not authenticated");
@@ -156,17 +185,30 @@ public class Client extends Thread {
 				bytes_read = sockInput.read(buf3, 0, buf3.length);
 				AES.setIV(buf3);
 				System.out.println(buf3);
-				String decryptedText = AES.decrypt(encryptedText, VPNGUI.DHKey.toString());
-				System.out.println(decryptedText);
-				VPNGUI.clientRecievedMessage = decryptedText;
-				VPNGUI.displayEncrypyedClientReceivedMessage.setText("Encrypted Text from Server: "+encryptedText.toString());
-				VPNGUI.displayClientIV.setText(("IV From Server: "+AES.getIV()).toString());
-				VPNGUI.displayClientReceivedMessage.setText("Decrypted Text: "+ decryptedText);
+				String decryptedText;
+				try {
+					decryptedText = AES.decrypt(encryptedText, VPNGUI.DHKey.toString());
+					System.out.println(decryptedText);
+					VPNGUI.clientRecievedMessage = decryptedText;
+					VPNGUI.displayEncrypyedClientReceivedMessage.setText("Encrypted Text from Server: "+encryptedText.toString());
+					VPNGUI.displayClientIV.setText(("IV From Server: "+AES.getIV()).toString());
+					VPNGUI.displayClientReceivedMessage.setText("Decrypted Text: "+ decryptedText);
+				} catch (InvalidKeyException
+						| InvalidAlgorithmParameterException
+						| NoSuchAlgorithmException | NoSuchPaddingException
+						| IllegalBlockSizeException | BadPaddingException e) {
+					// TODO Auto-generated catch block
+					new ErrorMessage("Error decrypting data");
+					return;
+				}
+				
 				//VPNGUI.clientMode();
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
+				new ErrorMessage("Oops this is embarassing, please try again.");
+				
 			}
 		}
 	}

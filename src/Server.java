@@ -98,6 +98,7 @@ public class Server extends Thread{
 					sendMessage("showdisplay".getBytes());
                 	setUpComplete = true;
                 	VPNGUI.serverMode();
+                	VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();
                 }
                 else if (VPNGUI.serverRecievedMessage.contains("client:sendiv")){
                 	System.out.println("sending iv");
@@ -128,8 +129,9 @@ public class Server extends Thread{
                 //sockOutput.flush();
             }
             catch (Exception e){
-                System.err.println("Exception reading from/writing to socket, e="+e);
-                e.printStackTrace(System.err);
+                new ErrorMessage("Oops, please try again.");
+            	//System.err.println("Exception reading from/writing to socket, e="+e);
+                //e.printStackTrace(System.err);
                 return;
             }
         }

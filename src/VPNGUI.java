@@ -39,6 +39,8 @@ public class VPNGUI {
 	public static JLabel displayClientReceivedMessage;
 	public static JLabel displayServerReceivedMessage;
 	
+	public static boolean showCLient = false;
+	
 	// Constructor for GUI
 	public VPNGUI() {
 		showGUI();
@@ -145,6 +147,7 @@ public class VPNGUI {
 		//System.out.println("in here");
 		
 		if (modeToStartIN == "Client") {
+			while(!showCLient){System.out.println("Still in loop");}
 			clientMode();
 		}
 
@@ -169,6 +172,7 @@ public class VPNGUI {
 	}
 
 	public static void clientMode(){
+		
 		frame.setTitle("CLIENT - VPN EECE 412 ASSIGNMENT 3");
 		Font font = new Font("Arial", Font.BOLD, 16);
 		JLabel tableTitle = new JLabel("Client");

@@ -58,19 +58,16 @@ public class AES {
 	public static void setIV(byte[] IV){
 		iv = IV;
 	}
-	public static String decrypt(byte[] string, String key){
+	public static String decrypt(byte[] string, String key) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException{
 		
 		
-		try {
+		
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
 			String encrtyptedText = new String(cipher.doFinal(string), "UTF-8");
 			return encrtyptedText;
-		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | UnsupportedEncodingException | InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		
+		//return null;
 	}
 }
