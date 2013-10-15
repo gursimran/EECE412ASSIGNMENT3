@@ -165,9 +165,8 @@ public class Client extends Thread {
 						//BigInteger a = new BigInteger("0");
 						//serverDHKey = g.pow(b.intValue()).mod(p);
 	                	bytes_read = sockInput.read(buf, 0, buf.length);
-						VPNGUI.showCLient = true;
-	                	///VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();VPNGUI.clientMode();
-						//return;
+						//VPNGUI.showCLient = true;
+	                	VPNGUI.clientMode();
 					}else{
 						new ErrorMessage("Server not authenticated");
 						return;

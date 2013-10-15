@@ -43,6 +43,7 @@ public class Server extends Thread{
                     VPNGUI.displayPane.removeAll();
 					VPNGUI.displayPane.updateUI();
 					VPNGUI.waitingForConnection();
+					VPNGUI.showServer = false;
                     return;
                 }
                 //System.err.println("Received "+bytes_read
@@ -97,8 +98,9 @@ public class Server extends Thread{
 					}
 					sendMessage("showdisplay".getBytes());
                 	setUpComplete = true;
+                	//VPNGUI.showServer = true;
                 	VPNGUI.serverMode();
-                	VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();
+                	//VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();VPNGUI.serverMode();
                 }
                 else if (VPNGUI.serverRecievedMessage.contains("client:sendiv")){
                 	System.out.println("sending iv");

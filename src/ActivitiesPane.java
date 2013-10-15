@@ -158,6 +158,7 @@ public class ActivitiesPane extends JPanel {
 						VPNGUI.displayPane.updateUI();
 						VPNGUI.p = null;
 						VPNGUI.g = null;
+						VPNGUI.showCLient = false;
 						try {
 							//((Server) ActivitiesPane.serverThread).shutdown();
 							//clientThread.shutdown();
@@ -246,7 +247,7 @@ public class ActivitiesPane extends JPanel {
 						startServer.setText("Start Server");
 						VPNGUI.displayPane.removeAll();
 						VPNGUI.displayPane.updateUI();
-						
+						VPNGUI.showServer = false;
 						try {
 							serverSocket.close();
 						} catch (IOException e1) {}

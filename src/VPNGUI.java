@@ -40,6 +40,7 @@ public class VPNGUI {
 	public static JLabel displayServerReceivedMessage;
 	
 	public static boolean showCLient = false;
+	public static boolean showServer = false;
 	
 	// Constructor for GUI
 	public VPNGUI() {
@@ -147,7 +148,7 @@ public class VPNGUI {
 		//System.out.println("in here");
 		
 		if (modeToStartIN == "Client") {
-			while(!showCLient){System.out.println("Still in loop");}
+			while(!showCLient){}
 			clientMode();
 		}
 
@@ -165,7 +166,8 @@ public class VPNGUI {
 			}
 			//serverMode();
 			waitingForConnection();
-			
+			//while(!showServer){}
+			//serverMode();
 		}
 
 		
