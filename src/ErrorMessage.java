@@ -6,9 +6,6 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class ErrorMessage extends JFrame{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 100;
@@ -17,6 +14,7 @@ public class ErrorMessage extends JFrame{
 	
 	private ExitButtonHandler ebHandler;
 	
+	//Display message 
 	public ErrorMessage(String errorMessage){
 		this.errorMessage = new JLabel(errorMessage, SwingConstants.CENTER);
 		exitB = new JButton("Okay");
@@ -28,7 +26,6 @@ public class ErrorMessage extends JFrame{
 		pane.add(exitB);
 		setSize(WIDTH, HEIGHT);
 		setVisible(true);
-		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	private class ExitButtonHandler implements ActionListener

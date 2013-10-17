@@ -19,11 +19,22 @@ public class VPNGUI {
 	private JPanel connectionPane;
 	public static JPanel displayPane;
 	private ActivitiesPane activitiesPane;
+
+	// Set dimensions for window
 	public static int height = 550;
 	public int width = 1050;
+
+	// GUI static variables
+	public static JLabel displayEncrypyedClientReceivedMessage;
+	public static JLabel displayEncryptedServerReceivedMessage;
+	public static JLabel displayClientIV;
+	public static JLabel displayServerIV;
+	public static JLabel displayClientReceivedMessage;
+	public static JLabel displayServerReceivedMessage;
 	public static String serverRecievedMessage = "";
 	public static String clientRecievedMessage = "";
-	SecureRandom random = null;
+
+	// DH mutual authentication variables
 	public static BigInteger p = null;
 	public static BigInteger g = null;
 	public static BigInteger a = null;
@@ -31,17 +42,7 @@ public class VPNGUI {
 	public static BigInteger serverDHKey = null;
 	public static BigInteger clientDHKey = null;
 	public static BigInteger DHKey = null;
-	
-	public static JLabel displayEncrypyedClientReceivedMessage;
-	public static JLabel displayEncryptedServerReceivedMessage;
-	public static JLabel displayClientIV;
-	public static JLabel displayServerIV;
-	public static JLabel displayClientReceivedMessage;
-	public static JLabel displayServerReceivedMessage;
-	
-	public static boolean showCLient = false;
-	public static boolean showServer = false;
-	
+
 	// Constructor for GUI
 	public VPNGUI() {
 		showGUI();
@@ -50,14 +51,14 @@ public class VPNGUI {
 	// Method to display the GUI
 	public void showGUI() {
 
+		// Frame settings
 		frame = new JFrame("VPN EECE 412 ASSIGNMENT 3");
 		frame.setBackground(Color.white);
-
 		frame.setPreferredSize(new Dimension(1000, 500));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setMaximumSize(new Dimension(1000,500));
-		
-		// Panel for viewing the tables
+		frame.setMaximumSize(new Dimension(1000, 500));
+
+		// Panel for viewing the messages
 		displayPane = new JPanel();
 		displayPane.setBorder(BorderFactory.createLineBorder(Color.black));
 		displayPane.setLayout(new BoxLayout(displayPane, BoxLayout.PAGE_AXIS));
@@ -65,7 +66,8 @@ public class VPNGUI {
 
 		// Panel for displaying types of users
 		connectionPane = new JPanel();
-		connectionPane.setLayout(new BoxLayout(connectionPane, BoxLayout.Y_AXIS));
+		connectionPane
+				.setLayout(new BoxLayout(connectionPane, BoxLayout.Y_AXIS));
 		connectionPane.setBorder(BorderFactory.createLineBorder(Color.black));
 		Font font = new Font("Arial", Font.BOLD, 16);
 		JTextArea connectionTypes = new JTextArea("Connection Type");
@@ -74,15 +76,16 @@ public class VPNGUI {
 		connectionTypes.setMaximumSize(new Dimension(700, 30));
 		connectionPane.add(connectionTypes);
 
+		// Settings pane for user selected
 		activitiesPane = new ActivitiesPane();
-		
+
+		// Initialize GUI panels and menu
 		initializeMenu();
 		initializeUserPane();
 
 		// Adds all the panels to the frame
 		frame.getContentPane().add(connectionPane, BorderLayout.WEST);
 		frame.getContentPane().add(displayPane, BorderLayout.CENTER);
-
 		frame.getContentPane().add(activitiesPane, BorderLayout.EAST);
 
 		// Shows the frame
@@ -108,7 +111,6 @@ public class VPNGUI {
 		});
 
 		VPN.add(quit);
-		
 		menuBar = new JMenuBar();
 		menuBar.add(VPN);
 		frame.setJMenuBar(menuBar);
@@ -117,12 +119,14 @@ public class VPNGUI {
 	// Method for initializing the activities for each user
 	private void initializeUserPane() {
 
+		// Server and client button
 		JButton clientButton = new JButton("Client");
 		JButton serverButton = new JButton("Server");
 
 		connectionPane.add(clientButton);
 		connectionPane.add(serverButton);
 
+		// Show client settings
 		clientButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				activitiesPane.removeAll();
@@ -131,6 +135,7 @@ public class VPNGUI {
 			}
 		});
 
+		// show server settings
 		serverButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				activitiesPane.removeAll();
@@ -141,79 +146,75 @@ public class VPNGUI {
 
 	}
 
-	// For displaying the appropriate tables after each transaction
+	// Start Server
 	public static void startVPN(String modeToStartIN) {
-		
-		//JTable table = null;
-		//System.out.println("in here");
-		
-		if (modeToStartIN == "Client") {
-			while(!showCLient){}
-			clientMode();
-		}
 
+		// Generate p,g,b and calculate g^b mod p
 		if (modeToStartIN == "Server") {
-			if (g == null){
+			if (g == null) {
 				SecureRandom rnd = new SecureRandom();
 				g = BigInteger.probablePrime(32, rnd);
 				p = BigInteger.probablePrime(64, rnd);
 				b = BigInteger.probablePrime(16, rnd);
-				//BigInteger a = new BigInteger("0");
 				serverDHKey = g.pow(b.intValue()).mod(p);
-				
-				//serverRecievedMessage = p.toString();
-				System.out.println(g + "\n" + serverDHKey);
 			}
-			//serverMode();
+			// update UI to show server is redy for listening
 			waitingForConnection();
-			//while(!showServer){}
-			//serverMode();
 		}
 
-		
 	}
 
-	public static void clientMode(){
-		
+	// Display the client mode
+	public static void clientMode() {
 		frame.setTitle("CLIENT - VPN EECE 412 ASSIGNMENT 3");
 		Font font = new Font("Arial", Font.BOLD, 16);
 		JLabel tableTitle = new JLabel("Client");
 		tableTitle.setFont(font);
 		JLabel emptySpace = new JLabel("                  ");
-		JLabel nonceSentToServer = new JLabel("Nonce Sent To Server: " + Client.nonce);
-		JLabel nonceReceivevedFromServer = new JLabel("Nonce Received From Server: " + Client.serverNonce);
-		JLabel encryptedMessageReceivedFromServer = new JLabel("Encrypted DH key exchange: " + Client.encryptedDHKeyExchange);
-		JLabel decryptedDHKey  = new JLabel("Decrypted DH Key Exchange: " + Client.DHKeyExchange);
+		JLabel nonceSentToServer = new JLabel("Nonce Sent To Server: "
+				+ Client.nonce);
+		JLabel nonceReceivevedFromServer = new JLabel(
+				"Nonce Received From Server: " + Client.serverNonce);
+		JLabel encryptedMessageReceivedFromServer = new JLabel(
+				"Encrypted DH key exchange: " + Client.encryptedDHKeyExchange);
+		JLabel decryptedDHKey = new JLabel("Decrypted DH Key Exchange: "
+				+ Client.DHKeyExchange);
 		JLabel DHg = new JLabel("g: " + g.toString());
 		JLabel DHp = new JLabel("p: " + p.toString());
 		JLabel DHa = new JLabel("a: " + a.toString());
 		JLabel DHserver = new JLabel("g^b mod p: " + serverDHKey.toString());
 		JLabel DHclient = new JLabel("g^a mod p: " + clientDHKey.toString());
-		JLabel DHKeyLabel = new JLabel("DHKey (Session Key): " + DHKey.toString());
+		JLabel DHKeyLabel = new JLabel("DHKey (Session Key): "
+				+ DHKey.toString());
 		JLabel messageSendLabel = new JLabel("Type the message to send: ");
 		final JLabel encryptedMessageBeingSent = new JLabel();
 		final JLabel IVBeingSent = new JLabel();
 		final JTextField messageToSend = new JTextField();
-		messageToSend.setMaximumSize(new Dimension(500,50));
+		messageToSend.setMaximumSize(new Dimension(500, 50));
 		JButton messageSendButton = new JButton("Send");
+
+		// Send message to server when send button clicked
 		messageSendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//Client client = new Client(ActivitiesPane.clientSocket);
-				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(), DHKey.toString());
-				System.out.println(encryptedMessage.length);
-				encryptedMessageBeingSent.setText("Encrypted Message '" + messageToSend.getText() + "': " + encryptedMessage.toString());
-				IVBeingSent.setText("IV for encrypted message: "+AES.getIV().toString());
-				((Client) ActivitiesPane.clientThread).sendSomeMessages(1, encryptedMessage);
+				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(),
+						DHKey.toString());
+				encryptedMessageBeingSent.setText("Encrypted Message '"
+						+ messageToSend.getText() + "': "
+						+ encryptedMessage.toString());
+				IVBeingSent.setText("IV for encrypted message: "
+						+ AES.getIV().toString());
+				((Client) ActivitiesPane.clientThread)
+						.sendSomeMessages(encryptedMessage);
 			}
 		});
+
 		JLabel messageRecieveLabel = new JLabel("Message from server: ");
 		Font font2 = new Font("Arial", Font.BOLD, 14);
-		
 		displayEncrypyedClientReceivedMessage = new JLabel();
 		displayClientIV = new JLabel();
 		displayClientReceivedMessage = new JLabel();
 		displayClientReceivedMessage.setFont(font2);
-		
+
 		displayPane.removeAll();
 		displayPane.updateUI();
 		displayPane.add(tableTitle);
@@ -238,46 +239,60 @@ public class VPNGUI {
 		displayPane.add(displayClientIV);
 		displayPane.add(displayClientReceivedMessage);
 	}
-	public static void serverMode(){
+
+	// Display the server view
+	public static void serverMode() {
 		frame.setTitle("SERVER - VPN EECE 412 ASSIGNMENT 3");
 		JLabel label = new JLabel("Server");
 		Font font = new Font("Arial", Font.BOLD, 16);
 		label.setFont(font);
 		JLabel emptySpace = new JLabel("                  ");
-		JLabel nonceSentToClient = new JLabel("Nonce Sent To Client: " + Server.nonce);
-		JLabel nonceReceivevedFromClient = new JLabel("Nonce Received From Client: " + Server.nonceFromClient);
-		JLabel encryptedMessageReceivedFromClient = new JLabel("Encrypted DH key exchange: " + Server.encryptedDHKeyExchange);
-		JLabel decryptedDHKey  = new JLabel("Decrypted DH Key Exchange: " + Server.DHKeyExchange);
+		JLabel nonceSentToClient = new JLabel("Nonce Sent To Client: "
+				+ Server.nonce);
+		JLabel nonceReceivevedFromClient = new JLabel(
+				"Nonce Received From Client: " + Server.nonceFromClient);
+		JLabel encryptedMessageReceivedFromClient = new JLabel(
+				"Encrypted DH key exchange: " + Server.encryptedDHKeyExchange);
+		JLabel decryptedDHKey = new JLabel("Decrypted DH Key Exchange: "
+				+ Server.DHKeyExchange);
 		JLabel DHg = new JLabel("g: " + g.toString());
 		JLabel DHp = new JLabel("p: " + p.toString());
 		JLabel DHb = new JLabel("b: " + b.toString());
 		JLabel DHserver = new JLabel("g^b mod p: " + serverDHKey.toString());
 		JLabel DHclient = new JLabel("g^a mod p: " + clientDHKey.toString());
-		JLabel DHKeyLabel = new JLabel("DHKey (Session Key): " + DHKey.toString());
+		JLabel DHKeyLabel = new JLabel("DHKey (Session Key): "
+				+ DHKey.toString());
 		JLabel serverMessageLabel = new JLabel("Message from client:");
 		JLabel serverSendMessageLabel = new JLabel("Send to client:");
 		final JLabel encryptedMessageBeingSent = new JLabel();
 		final JLabel IVBeingSent = new JLabel();
 		final JTextField messageToSend = new JTextField();
-		messageToSend.setMaximumSize(new Dimension(500,50));
+		messageToSend.setMaximumSize(new Dimension(500, 50));
 		JButton messageSendButton = new JButton("Send");
+
+		// Send message to client
 		messageSendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(), DHKey.toString());
+				byte[] encryptedMessage = AES.encrypt(messageToSend.getText(),
+						DHKey.toString());
 				System.out.println("entext:" + encryptedMessage);
-				encryptedMessageBeingSent.setText("Encrypted Message '" + messageToSend.getText() + "': " + encryptedMessage.toString());
-				IVBeingSent.setText("IV for encrypted message: " + AES.getIV().toString());
-				((Server) ActivitiesPane.serverThread).sendMessage(encryptedMessage);
+				encryptedMessageBeingSent.setText("Encrypted Message '"
+						+ messageToSend.getText() + "': "
+						+ encryptedMessage.toString());
+				IVBeingSent.setText("IV for encrypted message: "
+						+ AES.getIV().toString());
+				((Server) ActivitiesPane.serverThread)
+						.sendMessage(encryptedMessage);
 			}
 		});
-		
+
 		Font font2 = new Font("Arial", Font.BOLD, 14);
-		
+
 		displayEncryptedServerReceivedMessage = new JLabel();
 		displayServerIV = new JLabel();
 		displayServerReceivedMessage = new JLabel();
 		displayServerReceivedMessage.setFont(font2);
-		
+
 		displayPane.removeAll();
 		displayPane.updateUI();
 		displayPane.add(label);
@@ -302,17 +317,18 @@ public class VPNGUI {
 		displayPane.add(displayServerIV);
 		displayPane.add(displayServerReceivedMessage);
 	}
-	
-	public static void waitingForConnection(){
+
+	// Display text "waiting for connection"
+	public static void waitingForConnection() {
 		displayPane.removeAll();
 		displayPane.updateUI();
 		displayPane.add(new JLabel("Waiting for connection..."));
-		
-	}
-	public static void main(String args[])
-    {
-      new VPNGUI();
-    }
-	
-}
 
+	}
+
+	// Main method
+	public static void main(String args[]) {
+		new VPNGUI();
+	}
+
+}
